@@ -46,11 +46,9 @@ export const ServerMember = ({ member, server }: ServerMemberProps) => {
             'text-primary dark:text-zinc-200 dark:group-hover:text-white'
         )}
       >
-        <span className='truncate'>
-          {member.profile.name.includes('null')
-            ? member.profile.email
-            : member.profile.name}
-        </span>
+        {member.profile.name.includes('null')
+          ? member.profile.email.split('@')[0]
+          : member.profile.name}
       </p>
       {icon}
     </button>
