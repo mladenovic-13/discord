@@ -1,18 +1,49 @@
+import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/lib/db';
-import { notFound } from 'next/navigation';
+import { redirectToSignIn } from '@clerk/nextjs';
+import { notFound, redirect } from 'next/navigation';
 
-const ServersPage = async ({ params }: { params: { serverId: string } }) => {
+interface ServerIdPageProps {
+  params: {
+    serverId: string;
+  };
+}
+
+const ServerIdPage = async ({ params }: ServerIdPageProps) => {
   const { serverId } = params;
 
-  const server = await db.server.findFirst({
+  const profile = await currentProfile();
+
+  if (!profile) return redirectToSignIn();
+
+  const server = await db.server.findUnique({
     where: {
       id: serverId,
+      members: {
+        some: {
+          profileId: profile.id,
+        },
+      },
+    },
+    include: {
+      channels: {
+        where: {
+          name: 'general',
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      },
     },
   });
 
+  const initialChannel = server?.channels[0];
+
+  if (initialChannel?.name !== 'general') return null;
+
   if (!server) return notFound();
 
-  return <div>{server?.name}</div>;
+  return redirect(`/servers/${serverId}/channels/${initialChannel.id}`);
 };
 
-export default ServersPage;
+export default ServerIdPage;
