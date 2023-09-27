@@ -4,7 +4,7 @@ import { type FileRouterEndpoints } from '@/app/api/uploadthing/core';
 import { UploadDropzone } from '@/lib/uploadthing';
 
 import '@uploadthing/react/styles.css';
-import { XIcon } from 'lucide-react';
+import { FileIcon, XIcon } from 'lucide-react';
 import Image from 'next/image';
 
 interface FileUploadProps {
@@ -30,6 +30,25 @@ export const FileUpload = ({ endpoint, value, onChange }: FileUploadProps) => {
         </button>
       </div>
     );
+
+  if (value && fileType === 'pdf') {
+    return (
+      <div className='relative mt-2 flex items-center rounded-md bg-background/10 p-2'>
+        <FileIcon className='h-10 w-10 fill-indigo-200 stroke-indigo-400' />
+        <a
+          href={value}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='ml-2 text-sm text-indigo-500 hover:underline dark:text-indigo-400'
+        >
+          {value}
+        </a>
+        <button className='absolute -right-2 -top-2 rounded-full bg-rose-500 p-1 text-white shadow-sm'>
+          <XIcon className='h-4 w-4' onClick={() => onChange('')} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <UploadDropzone
